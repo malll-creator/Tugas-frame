@@ -1,0 +1,85 @@
+<script>
+    // Array of object
+    let p1 = {'nip':'111', 'nama':'Budi Santoso','jabatan':'Manager',
+    'status':'Menikah','agama':'Islam'};
+    let p2 = {'nip':'112', 'nama':'Siti Aminah','jabatan':'Asisten Manager',
+    'status':'Belum','agama':'Islam'};
+    let p3 = {'nip':'113', 'nama':'Alissa','jabatan':'Supervisor',
+    'status':'Menikah','agama':'Kristen Protestan'};
+    let p4 = {'nip':'114', 'nama':'I Putu Gede','jabatan':'Staff',
+    'status':'Belum','agama':'Hindu'};
+    let p5 = {'nip':'115', 'nama':'Sri Rezeki','jabatan':'Staff',
+    'status':'Menikah','agama':'Budha'};
+    // Array associative
+    let pegawai = [p1, p2, p3, p4, p5];
+    // Array scalar
+    const judul = ['NO', 'NIP', 'NAMA', 'JABATAN', 'STATUS', 'AGAMA', 'GAPOK', 'TUNJAB', 'BPJS', 'TUNKEL', 'ZAKAT', 'GABER'];
+
+    // Fungsi pemisah rupiah
+    function formatRupiah(angka) {
+        return 'Rp' + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
+</script>
+
+<h3 align="center">DAFTAR PEGAWAI</h3>
+<table align="center" border="1" width="90%" cellspacing="0" cellpadding="10">
+    <thead>
+        <tr bgcolor="#7EAA92" id="header"></tr>
+    </thead>
+    <tbody id="body"></tbody>
+</table>
+
+<script>
+    // Generate judul kolom dari array scalar judul
+    let judul_kolom = '';
+    for (let jdl of judul) {
+        judul_kolom += `<th>${jdl}</th>`;
+    }
+    document.getElementById("header").innerHTML = judul_kolom;
+
+    // Generate data pegawai
+    let no = 1;
+    let rows = '';
+    for (let p of pegawai) {
+        // Cari gapok berdasarkan jabatan
+        let gapok = 0;
+        switch (p.jabatan) {
+            case 'Manager': gapok = 15000000; break;
+            case 'Asisten Manager': gapok = 10000000; break;
+            case 'Supervisor': gapok = 7500000; break;
+            case 'Staff': gapok = 3000000; break;
+        }
+        // Hitung tunjangan, BPJS, tunkel
+        let tunjab = 0.2 * gapok;
+        let bpjs = 0.05 * gapok;
+        let tunkel = (p.status === 'Menikah') ? 0.1 * gapok : 0;
+
+        // Hitung gaji kotor dan zakat
+        let gator = gapok + tunjab + bpjs + tunkel;
+        let zakat = (p.agama === 'Islam' && gator >= 7000000) ? 0.025 * gator : 0;
+
+        // Hitung gaji bersih
+        let gaber = gator - zakat;
+
+        // Warna-warni baris
+        let warna = no % 2 === 0 ? 'beige' : 'khaki';
+
+        // Tambahkan baris ke tabel
+        rows += `
+        <tr bgcolor="${warna}">
+            <td>${no++}</td>
+            <td>${p.nip}</td>
+            <td>${p.nama}</td>
+            <td>${p.jabatan}</td>
+            <td>${p.status}</td>
+            <td>${p.agama}</td>
+            <td align="right">${formatRupiah(gapok)}</td>
+            <td align="right">${formatRupiah(tunjab)}</td>
+            <td align="right">${formatRupiah(bpjs)}</td>
+            <td align="right">${formatRupiah(tunkel)}</td>
+            <td align="right">${formatRupiah(zakat)}</td>
+            <td align="right">${formatRupiah(gaber)}</td>
+        </tr>`;
+    }
+    document.getElementById("body").innerHTML = rows;
+</script>
